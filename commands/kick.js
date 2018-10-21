@@ -14,7 +14,7 @@ module.exports = {
 			return message.reply("You did not specify a valid ID.");
 		}
 		if (!member)
-			return message.reply(`You did not sepcify a valid user. Usage: \`${this.settings.usage}\``);
+			return message.reply(`You did not specify a valid user. Usage: \`${this.settings.usage}\``);
 		var reason = args.slice(1).join(" ") || "No reason provided";
 		if (member instanceof GuildMember) {
 			if (!checkPerms(message, member))
