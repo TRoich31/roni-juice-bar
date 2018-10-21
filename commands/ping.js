@@ -3,6 +3,7 @@ module.exports = {
 		message.reply(`pong! \`${bot.pings[0]}ms\`.`);
 	},
 	settings: {
-		name: "ping"
+		name: "ping",
+		usage: "-ping"
 	}
 };

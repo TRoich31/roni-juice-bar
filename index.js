@@ -5,7 +5,7 @@ const bot = new Discord.Client({ disableEveryone: true, fetchAllMembers: true })
 bot.commands = { enabledCommands: new Discord.Collection(), disabledCommands: [] };
 bot.allcommands = new Discord.Collection();
 bot.loaders = { enabledLoaders: [], disabledLoaders: [] };
-bot.muted = [];
+bot.timeout = [];
 
 var loadFile = fs.readdirSync(__dirname + "/load");
 
@@ -51,29 +51,27 @@ bot.safeSend = function(message, name) {
 	return message.author.send(`You attempted to use the \`${name}\` command in ${message.channel.toString()}, but I cannot chat there.`);
 };
 bot.on("ready", async () => {
-	console.log("-------------------------------------------------------------");
 	console.log(`${bot.user.tag} is online. ${bot.commands.enabledCommands.size}/${bot.commands.enabledCommands.size + bot.commands.disabledCommands.length} commands loaded successfully.`);
-	console.log("-------------------------------------------------------------");
 	let loaders = bot.loaders.enabledLoaders;
 	for (let loader of loaders) {
 		if (loader.run != null) loader.run(bot);
 	}
 });
-bot.on("guildMemberAdd", (member) => {
-	if (bot.muted.includes(member.id)) member.addRole(member.guild.roles.find((m) => m.name === "Muted"));
-});
 bot.on("message", (message) => {
 	if (message.channel.type !== "dm" && !message.author.bot) {
-		var cmd = message.content.split(/\s+/g)[0].toLowerCase();
-		if (cmd != null) {
-			var args = message.content.split(/\s+/g).slice(1);
-			var prefix = botconfig.prefix;
-			cmd = cmd.slice(prefix.length);
-			if (message.content.startsWith(prefix)) {
-				var commandFile = bot.commands.enabledCommands.find((command) => command.settings.name === cmd || (command.settings.aliases || []).includes(cmd));
-				if (commandFile != null) {
-					commandFile.run(bot, message, args);
-				}
+		var args = message.content.split(/ +/);
+		var cmd = args.shift().toLowerCase();
+		var prefixRegExp = new RegExp(`^(${botconfig.prefix})`);
+		var globalPrefixRegExp = new RegExp(`^(<@!?${message.client.user.id}>\\s*)`);
+		if (cmd != null && prefixRegExp.test(cmd) || globalPrefixRegExp.test(cmd)) {
+			var global = cmd.match(globalPrefixRegExp);
+			if (global != null && new RegExp(`^<@!?${message.client.user.id}>$`).test(cmd))
+				cmd += args.shift().toLowerCase();
+			var [, prefix] = cmd.match(prefixRegExp) || cmd.match(globalPrefixRegExp);
+			cmd = cmd.slice(prefix.length).trim();
+			var commandFile = bot.commands.enabledCommands.find(({ settings }) => (settings.aliases || []).concat(settings.name).includes(cmd));
+			if (commandFile != null) {
+				commandFile.run(bot, message, args);
 			}
 		}
 	}
