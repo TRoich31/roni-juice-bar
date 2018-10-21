@@ -1,6 +1,8 @@
-module.exports.run = async (bot, message) => {
-	message.reply(`pong! \`${bot.pings[0]}ms\`.`);
-};
-module.exports.help = {
-	name: "ping"
+module.exports = {
+	run: (bot, message) => {
+		message.reply(`pong! \`${bot.pings[0]}ms\`.`);
+	},
+	settings: {
+		name: "ping"
+	}
 };

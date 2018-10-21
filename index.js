@@ -22,8 +22,8 @@ for (let file of loadFile) {
 function checkCommand(command, name) {
 	var resultOfCheck = [true, null];
 	if (!command.run) resultOfCheck[0] = false; resultOfCheck[1] = `Missing Function: "module.run" of ${name}.`;
-	if (!command.help) resultOfCheck[0] = false; resultOfCheck[1] = `Missing Object: "module.help" of ${name}.`;
-	if (command.help && !command.help.name) resultOfCheck[0] = false; resultOfCheck[1] = `Missing String: "module.help.name" of ${name}.`;
+	if (!command.settings) resultOfCheck[0] = false; resultOfCheck[1] = `Missing Object: "module.settings" of ${name}.`;
+	if (command.settings && !command.settings.name) resultOfCheck[0] = false; resultOfCheck[1] = `Missing String: "module.settings.name" of ${name}.`;
 	return resultOfCheck;
 }
 fs.readdir("./commands/", (err, files) => {
@@ -34,9 +34,9 @@ fs.readdir("./commands/", (err, files) => {
 		const f = jsfiles[i];
 		try {
 			var props = require(`./commands/${f}`);
-			bot.allcommands.set(props.help.name, props);
+			bot.allcommands.set(props.settings.name, props);
 			if (checkCommand(props, f)[0]) {
-				bot.commands.enabledCommands.set(props.help.name, props);
+				bot.commands.enabledCommands.set(props.settings.name, props);
 			} else {
 				throw checkCommand(props, f)[1];
 			}
@@ -64,13 +64,13 @@ bot.on("guildMemberAdd", (member) => {
 });
 bot.on("message", (message) => {
 	if (message.channel.type !== "dm" && !message.author.bot) {
-		var cmd = message.content.split(" ")[0].toLowerCase();
+		var cmd = message.content.split(/\s+/g)[0].toLowerCase();
 		if (cmd != null) {
-			var args = message.content.split(" ").slice(1);
+			var args = message.content.split(/\s+/g).slice(1);
 			var prefix = botconfig.prefix;
 			cmd = cmd.slice(prefix.length);
 			if (message.content.startsWith(prefix)) {
-				var commandFile = bot.commands.enabledCommands.find((command) => command.help.name === cmd || (command.help.aliases || []).includes(cmd));
+				var commandFile = bot.commands.enabledCommands.find((command) => command.settings.name === cmd || (command.settings.aliases || []).includes(cmd));
 				if (commandFile != null) {
 					commandFile.run(bot, message, args);
 				}
