@@ -24,6 +24,6 @@ module.exports = {
 	settings: {
 		name: "suggest",
 		usage: "-suggest (title), [description]",
-		suggestChannel: "503659235301785632"
+		suggestChannel: "513840741139611659"
 	}
 };
