@@ -17,8 +17,8 @@ module.exports = {
 			.addField('New Announcement', args.join(' '))
 			.addField('Announced By:', `\n${message.author.toString()}`)
 			.setFooter(message.author.tag);
-    
-    announceChannel.send(mention, { embed: announceEmbed, disableEveryone: false }).catch(() => {
+
+		announceChannel.send(mention, { embed: announceEmbed, disableEveryone: false }).catch(() => {
 			message.reply('I do not have permissions to send messages in the announcements channel');
 		});
 	},
