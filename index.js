@@ -1,17 +1,17 @@
-const botconfig = require("./botconfig.js");
-const Discord = require("discord.js");
-const fs = require("fs");
+const botconfig = require('./botconfig.js');
+const Discord = require('discord.js');
+const fs = require('fs');
 const bot = new Discord.Client({ disableEveryone: true, fetchAllMembers: true });
 bot.commands = { enabledCommands: new Discord.Collection(), disabledCommands: [] };
 bot.allcommands = new Discord.Collection();
 bot.loaders = { enabledLoaders: [], disabledLoaders: [] };
 bot.timeout = [];
 
-var loadFile = fs.readdirSync(__dirname + "/load");
+var loadFile = fs.readdirSync(__dirname + '/load');
 
 for (let file of loadFile) {
 	try {
-		let loader = require("./load/" + file);
+		let loader = require('./load/' + file);
 		bot.loaders.enabledLoaders.push(loader);
 	} catch (err) {
 		bot.loaders.disabledLoaders.push(file);
@@ -26,10 +26,10 @@ function checkCommand(command, name) {
 	if (command.settings && !command.settings.name) resultOfCheck[0] = false; resultOfCheck[1] = `Missing String: "module.settings.name" of ${name}.`;
 	return resultOfCheck;
 }
-fs.readdir("./commands/", (err, files) => {
+fs.readdir('./commands/', (err, files) => {
 	if (err) console.log(err);
-	var jsfiles = files.filter((f) => f.split(".").pop() === "js");
-	if (jsfiles.length <= 0) return console.log("Couldn't find commands.");
+	var jsfiles = files.filter((f) => f.split('.').pop() === 'js');
+	if (jsfiles.length <= 0) return console.log('Couldn\'t find commands.');
 	for (let i= 0, len = jsfiles.length; i < len; i++) {
 		const f = jsfiles[i];
 		try {
@@ -50,15 +50,15 @@ fs.readdir("./commands/", (err, files) => {
 bot.safeSend = function(message, name) {
 	return message.author.send(`You attempted to use the \`${name}\` command in ${message.channel.toString()}, but I cannot chat there.`);
 };
-bot.on("ready", async () => {
+bot.on('ready', async () => {
 	console.log(`${bot.user.tag} is online. ${bot.commands.enabledCommands.size}/${bot.commands.enabledCommands.size + bot.commands.disabledCommands.length} commands loaded successfully.`);
 	let loaders = bot.loaders.enabledLoaders;
 	for (let loader of loaders) {
 		if (loader.run != null) loader.run(bot);
 	}
 });
-bot.on("message", (message) => {
-	if (message.channel.type !== "dm" && !message.author.bot) {
+bot.on('message', (message) => {
+	if (message.channel.type !== 'dm' && !message.author.bot) {
 		var args = message.content.split(/ +/);
 		var cmd = args.shift().toLowerCase();
 		var prefixRegExp = new RegExp(`^(${botconfig.prefix})`);
