@@ -1,7 +1,7 @@
 var Discord = require('discord.js');
 module.exports = {
 	run: function (bot, message, args) {
-		var announceChannel = bot.channels.get(this.settings.announceChannel);
+		//var announceChannel = bot.channels.get(this.settings.announceChannel);
 		if (!message.member.roles.has(this.settings.requiredRole)) return message.reply('You do not have permission to use this command!');
 		if (!args[1]) return message.reply(`You did not supply enough parameters. Usage: \`${this.settings.usage}\``);
 
@@ -20,14 +20,13 @@ module.exports = {
 			.addField('Announced By:', `\n${message.author.toString()}`)
 			.setFooter(message.author.tag);
 
-		announceChannel.send(mention, { embed: announceEmbed, disableEveryone: false }).catch(() => {
+		message.channel.send(mention, { embed: announceEmbed, disableEveryone: false }).catch(() => {
 			message.reply('I do not have permissions to send messages in the announcements channel');
-		});
+		}).then(() => message.delete());
 	},
 	settings: {
 		name: 'announce',
 		usage: '-announce (none/everyone/here) (announcement)',
-		announceChannel: '494553891145515028',
 		requiredRole: '503664784252600352',
 	}
 };
