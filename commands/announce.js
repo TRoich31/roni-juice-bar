@@ -12,6 +12,8 @@ module.exports = {
 		if (mention === 0)
 			return message.reply(`Invalid usage. Usage: \`${this.settings.usage}\``);
 
+		args.shift();
+
 		var announceEmbed = new Discord.RichEmbed()
 			.setColor('#f5f5dc')
 			.addField('New Announcement', args.join(' '))
